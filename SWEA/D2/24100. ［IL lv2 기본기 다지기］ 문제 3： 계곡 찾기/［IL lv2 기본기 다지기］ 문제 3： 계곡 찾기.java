@@ -5,49 +5,41 @@ public class Solution {
 		// 입력
 		Scanner sc = new Scanner(System.in);
 		int tc = sc.nextInt();
-		
-		for(int t = 1; t<=tc;t++){
-
+		for(int t = 1; t<=tc;t++) {
+			
 			int N = sc.nextInt();
+			
+			// 배열 만들기
 			int[][] arr = new int[N][N];
+			for(int i = 0; i<N ; i++) {
+				for(int j = 0; j<N ; j++) {
+					arr[i][j] = sc.nextInt();
+				}
+			}
 			
-			// 배열 입력
-			for (int i = 0; i < N; i++) {
-	            for (int j = 0; j < N; j++) {
-	                arr[i][j] = sc.nextInt();
-	            }
-	        }
-			
-			int count = 0;
-			
-			// 왼 = dx[0] dy[0]
-			// 오 = dx[1] dy[1]
-			// 아 = dx[2] dy[2]
-			// 위 = dx[3] dy[4]
-			int[] dx = {0,0,1,-1};
+			// 델타 좌우상하
+			int[] dx = {0,0,-1,1};
 			int[] dy = {-1,1,0,0};
 			
-			
-			
-			
-			for(int x=1; x<N-1; x++) {
-				for(int y = 1; y<N-1; y++) {
-					int h = arr[x][y];
-					boolean vally = true;
-					for(int d = 0; d<4;d++) {
-						int nx = x +dx[d];
-						int ny = y +dy[d];
+			// 계곡인지 확인
+			int count = 0;
+			for(int i =1; i<N-1; i++) {
+				for(int j =1; j<N-1;j++) {
+					boolean isValley = true;
+					int now = arr[i][j];
+					for(int k = 0; k<4;k++) {
+						int nx = i + dx[k];
+						int ny = j + dy[k];
 						
-						if(arr[nx][ny]<=h) {
-							vally=false;
+						if(now >= arr[nx][ny]) {
+							isValley = false;
 							break;
 						}
 					}
-					if (vally) count++;
-					
+					if(isValley) count++;
 				}
 			}
-			System.out.println("#" + t+ " " +count);
+			System.out.println("#" + t + " "+count);
 		}
 		
 	}
