@@ -1,73 +1,62 @@
-import java.util.ArrayDeque;
-import java.util.Queue;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Solution {
-	static int n;
-	static int[][] maze;
-	static boolean[][] visited;
-	static int result;
-	static int[][] dirs = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
 
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		int tc = 10;
-		for (int t = 1; t <= tc; t++) {
-			n = 16;
-			sc.nextLine();
-			maze = new int[n][n];
-			visited = new boolean[n][n];
+    static int[][] maze = new int[16][16];
+    static boolean[][] visited = new boolean[16][16];
+    static int startR, startC;
+    static boolean found;
+    static final int[][] dirs = { {-1,0}, {1,0}, {0,-1}, {0,1} };
 
-			int r = 0, c = 0;
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
 
-			for (int i = 0; i < n; i++) {
-				String str = sc.nextLine();
-				for (int j = 0; j < n; j++) {
-					maze[i][j] = str.charAt(j) - '0';
+        for (int t = 1; t <= 10; t++) {
+            // 1) 케이스 번호 버리기
+            sc.nextInt();
 
-					if (maze[i][j] == 2) {
-						r = i;
-						c = j;
-					}
-				}
-			}
-			if (bfs(r, c) == 0) {
-				result = 0;
-			} else {
-				result = 1;
-			}
-			System.out.println("#" + t + " " + result);
-		}
-	}
+            // 2) 입력 (각 행은 공백 없는 16글자이므로 next() 사용)
+            startR = startC = -1;
+            for (int i = 0; i < 16; i++) {
+                String row = sc.next();
+                for (int j = 0; j < 16; j++) {
+                    int cell = row.charAt(j) - '0';
+                    maze[i][j] = cell;
+                    if (cell == 2) {
+                        startR = i;
+                        startC = j;
+                    }
+                }
+            }
 
-	public static int bfs(int x, int y) {
-		Queue<int[]> queue = new ArrayDeque<>();
-		visited[x][y] = true;
+            // 3) 초기화
+            for (int i = 0; i < 16; i++) Arrays.fill(visited[i], false);
+            found = false;
 
-		queue.add(new int[] { x, y, 0 });
+            // 4) DFS 실행
+            if (startR != -1) dfs(startR, startC);
 
-		while (!queue.isEmpty()) {
-			int[] cord = queue.poll();
+            // 5) 출력
+            System.out.println("#" + t + " " + (found ? 1 : 0));
+        }
+    }
 
-			int r = cord[0];
-			int c = cord[1];
-			int dist = cord[2];
+    static void dfs(int r, int c) {
+        if (found) return;
+        if (r < 0 || r >= 16 || c < 0 || c >= 16) return;
+        if (maze[r][c] == 1 || visited[r][c]) return;
 
-			for (int d = 0; d < 4; d++) {
-				int nr = r + dirs[d][0];
-				int nc = c + dirs[d][1];
+        if (maze[r][c] == 3) { // 도착
+            found = true;
+            return;
+        }
 
-				if (nr < 0 || nc < 0 || nr >= n || nc >= n || visited[nr][nc] || maze[nr][nc] == 1) {
-					continue;
-				}
-				if (maze[nr][nc] == 3) {
-					return dist;
-				}
-				visited[nr][nc] = true;
-				queue.add(new int[] { nr, nc, dist + 1 });
-			}
-		}
+        visited[r][c] = true;
 
-		return 0;
-	}
+        for (int[] d : dirs) {
+            dfs(r + d[0], c + d[1]);
+            if (found) return;
+        }
+    }
 }
