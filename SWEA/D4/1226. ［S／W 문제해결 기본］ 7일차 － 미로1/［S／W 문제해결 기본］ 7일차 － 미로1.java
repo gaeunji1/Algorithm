@@ -1,62 +1,64 @@
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 public class Solution {
+	static final int N = 16;
+	static int[][] maze;
+	static boolean[][] visited;
+	static final int[][] DIRS = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
 
-    static int[][] maze = new int[16][16];
-    static boolean[][] visited = new boolean[16][16];
-    static int startR, startC;
-    static boolean found;
-    static final int[][] dirs = { {-1,0}, {1,0}, {0,-1}, {0,1} };
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+		for (int t = 1; t <= 10; t++) { // 총 10개 테스트케이스
+			sc.nextInt(); // 테스트케이스 번호(입력 형식상 존재) 무시
+			sc.nextLine(); // 개행 소거
 
-        for (int t = 1; t <= 10; t++) {
-            // 1) 케이스 번호 버리기
-            sc.nextInt();
+			maze = new int[N][N];
+			visited = new boolean[N][N];
 
-            // 2) 입력 (각 행은 공백 없는 16글자이므로 next() 사용)
-            startR = startC = -1;
-            for (int i = 0; i < 16; i++) {
-                String row = sc.next();
-                for (int j = 0; j < 16; j++) {
-                    int cell = row.charAt(j) - '0';
-                    maze[i][j] = cell;
-                    if (cell == 2) {
-                        startR = i;
-                        startC = j;
-                    }
-                }
-            }
+			int sr = -1, sc2 = -1; // start r,c
+			for (int i = 0; i < N; i++) {
+				String line = sc.nextLine();
+				for (int j = 0; j < N; j++) {
+					maze[i][j] = line.charAt(j) - '0';
+					if (maze[i][j] == 2) {
+						sr = i;
+						sc2 = j;
+					}
+				}
+			}
 
-            // 3) 초기화
-            for (int i = 0; i < 16; i++) Arrays.fill(visited[i], false);
-            found = false;
+			int ans = bfs(sr, sc2) ? 1 : 0;
+			System.out.println("#" + t + " " + ans);
+		}
+	}
 
-            // 4) DFS 실행
-            if (startR != -1) dfs(startR, startC);
+	static boolean bfs(int sr, int sc2) {
+		ArrayDeque<int[]> q = new ArrayDeque<>();
+		visited[sr][sc2] = true;
+		q.offer(new int[] { sr, sc2 });
 
-            // 5) 출력
-            System.out.println("#" + t + " " + (found ? 1 : 0));
-        }
-    }
+		while (!q.isEmpty()) {
+			int[] cur = q.poll();
+			int r = cur[0], c = cur[1];
 
-    static void dfs(int r, int c) {
-        if (found) return;
-        if (r < 0 || r >= 16 || c < 0 || c >= 16) return;
-        if (maze[r][c] == 1 || visited[r][c]) return;
+			for (int[] d : DIRS) {
+				int nr = r + d[0], nc = c + d[1];
+				if (!in(nr, nc) || visited[nr][nc])
+					continue;
+				if (maze[nr][nc] == 1)
+					continue; // 벽
 
-        if (maze[r][c] == 3) { // 도착
-            found = true;
-            return;
-        }
+				if (maze[nr][nc] == 3)
+					return true; // 도착 발견
+				visited[nr][nc] = true;
+				q.offer(new int[] { nr, nc });
+			}
+		}
+		return false;
+	}
 
-        visited[r][c] = true;
-
-        for (int[] d : dirs) {
-            dfs(r + d[0], c + d[1]);
-            if (found) return;
-        }
-    }
+	static boolean in(int r, int c) {
+		return 0 <= r && r < N && 0 <= c && c < N;
+	}
 }
