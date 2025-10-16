@@ -1,17 +1,17 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.util.Scanner;
 
 public class Main {
     static int n, count;
     static int[] colPos;
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        n = Integer.parseInt(br.readLine().trim());
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        n = sc.nextInt();
         colPos = new int[n];
         count = 0;
         dfs(0);
         System.out.println(count);
+        sc.close();
     }
 
     static void dfs(int row) {
